@@ -49,4 +49,4 @@ Key Hardware Features:
 - Safety: Hardware Overcurrent, Overtemperature, and Stall Detection reporting back to Nexus-H7 via CAN FD.
 - Performance: Silent operation (Stealth), Zero step loss, and "Soft Collision" detection through real-time torque monitoring.
 
-Concept: Slave Nexus-Feeder 
+Concept: Slave Nexus-Feeder   
