@@ -25,7 +25,7 @@ The printed circuit board Nexus-H7 FD Master contains:
 
 Nexus-Tower Slave (Pluggable PCB Concept)
 Status: Architecture Design / In Progress
-The Nexus-Tower is a specialized point-of-use controller designed to be mounted directly on the PnP head (20x80mm profile). Its "Pluggable" nature allows for rapid maintenance and re-configuration of the head's peripherals.
+The Nexus-Tower is a specialized point-of-use controller designed to be mounted directly on the PnP head. Its "Pluggable" nature allows for rapid maintenance and re-configuration of the head's peripherals.
 Key Hardware Features:
 MCU: STM32G431 (Advanced Mixed-Signal MCU, 170MHz).
 Hybrid Motion Control:
@@ -37,3 +37,14 @@ Hybrid Motion Control:
 Lighting & Sensing:
 - 1x PWM Light Control: Dedicated channel for nozzle/camera illumination.
 - 3x Endstop Inputs: Z-min, C1-home, C2-home.
+
+Nexus-Drive FD: High-Performance Servo Node
+Status: Advanced Concept / Research Phase
+The Nexus-Drive FD is an intelligent FOC (Field Oriented Control) servo controller designed to drive X and Y axes with industrial-grade dynamics. It offloads real-time motor physics from the Master H7, communicating via high-speed CAN FD.
+Key Hardware Features:
+- MCU: STM32G431 (170MHz, Cordic math accelerator for FOC).
+- Power Stage: 3-Phase Gate Driver (DRV8301 or DRV8323) with 6x High-current N-CH MOSFETs (PowerFLAT 5x6).
+- Current Sensing: Dual or Triple shunt resistors with G431 internal OPAMPs for precise torque control.
+- Feedback: AS5047P / AS5048 Magnetic Absolute Encoder (14-bit SPI) for closed-loop position control.
+- Safety: Hardware Overcurrent, Overtemperature, and Stall Detection reporting back to Nexus-H7 via CAN FD.
+- Performance: Silent operation (Stealth), Zero step loss, and "Soft Collision" detection through real-time torque monitoring.
