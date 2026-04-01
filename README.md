@@ -22,3 +22,18 @@ The printed circuit board Nexus-H7 FD Master contains:
 - XGZP6847 vacuum, joystick + button.
 - +5V power supply (separate power supply).
 - 100x75mm printed circuit board, board mounting adapted for 20x80mm aluminum profile.
+
+Nexus-Tower Slave (Pluggable PCB Concept)
+Status: Architecture Design / In Progress
+The Nexus-Tower is a specialized point-of-use controller designed to be mounted directly on the PnP head (20x80mm profile). Its "Pluggable" nature allows for rapid maintenance and re-configuration of the head's peripherals.
+Key Hardware Features:
+MCU: STM32G431 (Advanced Mixed-Signal MCU, 170MHz).
+Hybrid Motion Control:
+- 1x Z-Axis: Dedicated High-Precision Servo/Stepper control.
+- 2x C-Axis (Nozzles): Dual TMC2209 (UART Mode) for quiet and precise rotation (C1/C2).
+- Integrated Pneumatics Hub:
+- 4x Valve Outputs: PWM-capable MOSFETs for pick-and-place cycles.
+- 2x Analog Vacuum Channels: Direct connection for XGZP6847 sensors (real-time ADC feedback over CAN FD).
+Lighting & Sensing:
+- 1x PWM Light Control: Dedicated channel for nozzle/camera illumination.
+- 3x Endstop Inputs: Z-min, C1-home, C2-home.
