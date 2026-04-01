@@ -49,10 +49,4 @@ Key Hardware Features:
 - Safety: Hardware Overcurrent, Overtemperature, and Stall Detection reporting back to Nexus-H7 via CAN FD.
 - Performance: Silent operation (Stealth), Zero step loss, and "Soft Collision" detection through real-time torque monitoring.
 
-Concept: Nexus-Feeder FD (Smart Actuator)
-This is a tiny module that fits into each feeder (or a bank of 10 feeders).
-Key Hardware Features:
-- MCU: STM32G0B1 (the cheapest chip with CAN FD and an integrated oscillator) or similar.
-- Driver: Integrated microstepper driver (e.g., TMC2300 – operates from 2V, tiny, and silent).
-- Sensing: Optical end-of-ribbon sensor + component presence sensor (IR reflectance).
-- Interface: Pass-through CAN FD + Power connector. Feeders are connected to each other in a "train-like" fashion in the base slots.
+Concept: Slave Nexus-Feeder 
