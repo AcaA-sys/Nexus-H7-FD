@@ -14,11 +14,10 @@ Driver Support: Optimized for high-speed optocouplers and digital drivers (Clear
 Bug fixed Aux analog https://github.com/dresco/STM32H7xx/issues/61#issuecomment-3804045790
 
 
-
 The printed circuit board Nexus-H7 FD Master contains:
 - Motion Control (1 MHz Step/Dir) X and Y Axis.
 - Communication interfaces (isolated) RS-485 TDH541S485H, 2*CAN FD TD541SCANFD.
-- UCC21520DW drivers (isolated). Keys: 4 x NTMFS5C628.
+- UCC21520DW drivers (isolated), keys 4 x NTMFS5C628.
 - Nextion Intelligen HMI.
 - XGZP6847 vacuum, joystick + button.
 - +5V power supply (separate power supply).
