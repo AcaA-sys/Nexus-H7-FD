@@ -29,10 +29,11 @@
 
 *   **Hardware:** V1.0 Ready (в стадии завершения дизайна платы).
 *   **Firmware:** В активной разработке. Базовая поддержка STM32H723 подтверждена разработчиками grblHAL (fixes by **dresco**).
-*   **Roadmap:** 
+*   **System Roadmap:** 
     *   Проектирование **Nexus-Tower** (Slave-модуль головы на G431).
     *   Проектирование  **Nexus-Drive FD** (Slave-модуль High-Torque FOC Servo, Concept. 3-Phase Gate Driver (DRV8301 or DRV8323) with 6x High-current N-CH MOSFETs (PowerFLAT 5x6).)
     *   Разработка протокола **Nexus-Feeder** (RS-485).
+ 
 
 ## 🤝 Коллаборация
 
