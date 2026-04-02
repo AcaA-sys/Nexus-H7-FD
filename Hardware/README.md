@@ -10,7 +10,7 @@
 
 *   **MCU:** STM32H723VGT6, ARM Cortex-M7 @ **550MHz**.
 *   **Firmware:** Полная совместимость с **grblHAL** (H7 driver fixes by dresco).
-*   **Step/Dir Performance:** Частота импульсов до **1 МГц** для локальных осей X/Y.
+*   **Step/Dir Performance:** Частота импульсов до **800 KГц** для локальных осей X/Y.
 *   **Изолированные интерфейсы связи:**
     *   **Dual CAN FD:** 2 порта (TD541SCANFD) для распределенных узлов (фидеры, голова, актуаторы).
     *   **RS-485:** 1 порт (TDH541S485H) для Modbus или панелей Nextion HMI.
