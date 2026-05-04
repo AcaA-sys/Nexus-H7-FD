@@ -65,6 +65,12 @@ Due to the **5 Mbps** physical limit of the transceivers:
 3. **Active Loop:** The Master (H723) processes ID 0x120 from Bus B and generates ID 0x050 for Bus A to minimize settling time and vibration blur.
 
 ---
+
+### Bandwidth Management"
+Bus Load Optimization: Since Tower-G4 axes (Z, N1, N2, etc.) operate without encoders, communication is strictly "Command-Response". This prevents bus congestion and ensures jitter-free streaming of 20-bit accelerometer data (ID 0x120) even during multi-axis moves.
+
+---
+
 *Nexus Ecosystem Protocol - Designed for Micron-level Pick and Place accuracy.*
 
 
