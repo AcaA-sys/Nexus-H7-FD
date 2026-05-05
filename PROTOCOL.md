@@ -1,4 +1,4 @@
-# Nexus-CAN FD Protocol Specification (v1.1)
+# Nexus-CAN FD Protocol Specification (v1.2)
 
 ## 1. System Topology
 The Nexus ecosystem operates on a dual-bus architecture managed by the **Nexus-H7-FD** (Master) running grblHAL.
@@ -7,29 +7,29 @@ The Nexus ecosystem operates on a dual-bus architecture managed by the **Nexus-H
 - **Master:** STM32H723
 - **Nodes:** 2x Nexus-Drive-FD (Axes X and Y)
 - **Transceiver:** TD541SCANFD (Limit: 5 Mbps)
-- **Role:** Critical trajectory execution and real-time error correction.
+- **Role:** Primary trajectory execution and real-time error correction.
 
-### Bus B: CAN FD-2 (Toolhead & Sensing)
+### Bus B: CAN FD-2 (Toolhead, Sensing & Virtual Axes)
 - **Master:** STM32H723
-- **Nodes:** Nexus-Tower-G4 (6-axis hub), Nexus-Accel-Unit (ADXL355/345)
+- **Nodes:** Nexus-Tower-G4 (Multi-axis hub), Nexus-Accel-Unit (ADXL355/345)
 - **Transceiver:** TD541SCANFD (Limit: 5 Mbps)
-- **Role:** Toolhead motion, vacuum control, and 20-bit vibration analytics.
+- **Role:** Toolhead motion, 20-bit vibration analytics, and virtual axis coordination.
 
 ---
 
 ## 2. CAN ID Allocation (11-bit Standard)
-IDs are ranked by priority. Lower hex values have higher bus priority.
+Priority is ranked by ID value (Lower = Higher Priority).
 
 
 | ID (Hex) | Name | Source | Description |
 | :--- | :--- | :--- | :--- |
 | **0x010** | **SYS_SYNC** | Master | Global timestamp sync pulse |
-| **0x050** | **RT_CORRECTION** | Master | **Active Trajectory Offset** (Real-time) |
+| **0x050** | **RT_CORRECTION** | Master | **Active Trajectory Offset** (Real-time compensation) |
 | **0x120** | **ACCEL_DATA** | Accel | Vibration stream (X, Y, Z - 20 bit) |
 | **0x201** | **DRIVE_X_CMD** | Master | X-Axis Target/Velocity |
 | **0x202** | **DRIVE_Y_CMD** | Master | Y-Axis Target/Velocity |
-| **0x310** | **TOWER_CMD** | Master | 6-axis Control (Z, N1, N2, Tool, Aux1/2) |
-| **0x311** | **TOWER_STATUS**| Tower | Vacuum (ADS1115) & Limit switches |
+| **0x310** | **TOWER_V_AXIS** | Master | **Virtual Axis Command** (Multi-motor macro) |
+| **0x311** | **TOWER_STATUS** | Tower | Vacuum (ADS1115) & Axis feedback |
 | **0x410** | **ENV_DATA** | Tower | Temperature (DS18B20) for Thermal Comp. |
 | **0x720** | **SERVICE** | Master | Black Box (Flash) data retrieval |
 
@@ -38,39 +38,33 @@ IDs are ranked by priority. Lower hex values have higher bus priority.
 ## 3. Critical Frame Definitions
 
 ### 3.1 Active Trajectory Correction (ID: 0x050)
-Sent by Master to Bus A to compensate for mechanical inertia detected by the accelerometer.
-- **Bytes 0-3:** Offset X (int32_t, nanometers or microsteps)
-- **Bytes 4-7:** Offset Y (int32_t, nanometers or microsteps)
-*Note: Nexus-Drive-FD must apply this offset instantly to the current motion buffer.*
+Real-time offset sent to Bus A to counteract mechanical inertia/vibrations.
+- **Bytes 0-3:** Offset X (int32_t, nanometers/microsteps)
+- **Bytes 4-7:** Offset Y (int32_t, nanometers/microsteps)
+*Drive-FD must inject this offset into the current motion buffer instantly.*
 
 ### 3.2 High-Precision Acceleration (ID: 0x120)
-Packs 20-bit raw data. 
 - **Byte 0-3:** Timestamp (uint32_t, microseconds).
 - **Byte 4-12:** Sample 1 (X, Y, Z - 20 bit each, packed).
-- **Byte 13:** Status Flags (Data Ready, Trigger, Tap).
+- **Byte 13:** Status Flags (Data Ready, Collision Detect).
 
-### 3.3 Multi-Axis Tower Control (ID: 0x310)
-- **Byte 0:** Target Axis Index (0=Z, 1=N1, 2=N2, 3=Tool, 4=Aux1, 5=Aux2).
-- **Byte 1-4:** Target Position (int32_t).
-- **Byte 5-6:** Velocity (uint16_t).
-- **Byte 7:** Actuator Mask (Vacuum, Solenoids, LED).
-
----
-
-## 4. Bandwidth & Performance Strategy
-Due to the **5 Mbps** physical limit of the transceivers:
-
-1. **Dual-Bus Isolation:** High-speed streaming from the Accelerometer on Bus B does not jitter the step-generation on Bus A.
-2. **Black Box Bypass:** For 4000Hz analysis, data is logged to the **W25Q128 SPI Flash** on the Tower/Accel node and retrieved via ID 0x720 during idle states.
-3. **Active Loop:** The Master (H723) processes ID 0x120 from Bus B and generates ID 0x050 for Bus A to minimize settling time and vibration blur.
+### 3.3 Virtual Axis Control (ID: 0x310)
+Used to control multiple motors on Tower-G4 without overloading grblHAL core.
+- **Byte 0:** Virtual Group ID (e.g., Nozzle_Rotate_All, Tool_Change_Seq).
+- **Byte 1-4:** Target Value / Coordinate (int32_t).
+- **Byte 5-6:** Speed/Parameter (uint16_t).
+- **Byte 7:** Command Bitmask (Vacuum, Solenoids).
 
 ---
 
-### Bandwidth Management"
-Bus Load Optimization: Since Tower-G4 axes (Z, N1, N2, etc.) operate without encoders, communication is strictly "Command-Response". This prevents bus congestion and ensures jitter-free streaming of 20-bit accelerometer data (ID 0x120) even during multi-axis moves.
+## 4. Operational Logic
+1. **Motion Isolation:** Primary axes (X/Y) stay on Bus A. All sensing and toolhead actions stay on Bus B.
+2. **Active Loop:** Master (H723) reads vibration from ID 0x120 (Bus B), processes the PID/Filter, and issues correction ID 0x050 (Bus A) within <1ms.
+3. **Bandwidth Management:** Tower axes use Open-Loop Step/Dir. No encoder feedback is streamed back unless requested, saving 5 Mbps bandwidth for 20-bit Accel data.
+4. **Black Box:** Full 4kHz 20-bit raw logs are saved to local **W25Q128 SPI Flash** and retrieved during machine idle via ID 0x720.
 
 ---
-
 *Nexus Ecosystem Protocol - Designed for Micron-level Pick and Place accuracy.*
+
 
 
